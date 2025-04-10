@@ -48,6 +48,7 @@ Arguments
 
   -u <target_url>: (Required) The base URL for testing. The script will append each line from the wordlist to this URL.
         Example: If -u https://example.com/api/v1/users/ is provided, and the wordlist contains 123, the script tests https://example.com/api/v1/users/123.
+        
   -w <wordlist>: (Required) Path to the file containing potential object identifiers (e.g., numbers, UUIDs, usernames), one per line.
         Example ids.txt:
 
@@ -57,12 +58,16 @@ Arguments
         101
         guest
 
+  
   -m <http_method>: (Required) The HTTP method to use (e.g., GET, POST, PUT, DELETE).
+  
   -o <output_file>: (Optional) File path to save results. Only successful findings (HTTP 200 status code) will be appended to this file.
+  
   -i <true|false>: (Optional) Controls the execution mode.
       -i true (Default if flag is omitted): Interactive Mode. The script pauses after each URL check, prompts for Enter key press to continue, and displays the status code for all attempts ([+] for 200, [-] for others).
       -i false: Non-Interactive Mode. The script runs continuously through the entire wordlist without pausing. It only prints successful (HTTP 200) results ([+]) to the console.
-    -h: Display this help menu and exit.
+    
+  -h: Display this help menu and exit.
 
 Examples
 
@@ -83,9 +88,11 @@ Interactive PUT Scan:
 
   ./IDOR-Auto.sh -u https://api.internal/resource/ -w resource_ids.txt -m PUT -i true
 
-How it Works & Disclaimer
+## How it Works & Disclaimer
 
-Here's a more detailed breakdown of what the script does:
+
+
+ **Here's a more detailed breakdown of what the script does:**
 
   Argument Parsing:
       The script uses the built-in Bash command getopts to parse the command-line flags (-u, -w, -m, -o, -i, -h) you provide.
@@ -103,11 +110,15 @@ Here's a more detailed breakdown of what the script does:
       
   response=$(curl -s -o /dev/null -w "%{http_code}" -X ${method} ${full_url})
 
-  -s: Runs curl in silent mode (no progress bars).
-  -o /dev/null: Discards the actual response body (the HTML, JSON, etc.). We only need the status code for this basic check.
-  -w "%{http_code}": This is the key part – it tells curl to output only the HTTP status code (like 200, 404, 403, etc.) after the request completes. This output is captured into the response variable.
-  -X ${method}: Sets the HTTP method (GET, POST, etc.) based on the value you provided with the -m flag.
-  ${full_url}: The complete URL being tested in the current loop iteration.
+   -s: Runs curl in silent mode (no progress bars).
+   
+   -o /dev/null: Discards the actual response body (the HTML, JSON, etc.). We only need the status code for this basic check.
+   
+   -w "%{http_code}": This is the key part – it tells curl to output only the HTTP status code (like 200, 404, 403, etc.) after the request completes. This output is captured into the response variable.
+   
+   -X ${method}: Sets the HTTP method (GET, POST, etc.) based on the value you provided with the -m flag.
+   
+   ${full_url}: The complete URL being tested in the current loop iteration.
 
 Analyzing the Response:
 
